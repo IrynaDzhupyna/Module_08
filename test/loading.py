@@ -1,4 +1,5 @@
 import importlib
+import importlib.metadata
 
 
 class DependencyStatus:
@@ -23,7 +24,20 @@ def check_dependency(dependency: str) -> DependencyStatus:
 
 def main() -> None:
     # check dependenies: pandas, numpy, matplotlib
-    pass
+    dependencies = ["pandas", "numpy", "matplotlib"]
+    dep_dict = {}
+    for dependency in dependencies:
+        status = check_dependency(dependency)
+        dep_dict[dependency] = status.available, status.version
+    
+    print("LOADING STATUS: Loading programs...i\n")
+    print("Checking dependencies:")
 
+    for dep in dep_dict:
+        pass
 
-main()
+    print(dep_dict)
+
+    
+if __name__ == "__main__":
+    main()

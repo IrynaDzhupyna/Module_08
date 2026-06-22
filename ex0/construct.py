@@ -26,4 +26,5 @@ def main() -> None:
         print(site.getsitepackages()[0])
 
 
-main()
+if __name__ == "__main__":
+    main()
