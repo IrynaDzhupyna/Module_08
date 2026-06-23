@@ -17,7 +17,7 @@ class DependencyInfo:
 
     def show_info(self) -> None:
         if self.available:
-            print(f"[OK] {self.name} ({self.version} - {self.description})")
+            print(f"[OK] {self.name} ({self.version}) - {self.description} ready")
         else:
             print(f"[MISSING] {self.name} - package not installed")
 
@@ -57,6 +57,7 @@ def main() -> None:
             print("Install with: pip install -r requirements.txt")
             print("Or with Poetry: poetry install")
             break
+    
 
 if __name__ == "__main__":
     main()
