@@ -62,7 +62,7 @@ def main() -> None:
         ("numpy", "Numerical computation"),
         ("matplotlib", "Visualization")
     ]
-    check_dependencies(dependencies)
+    all_deps = check_dependencies(dependencies)
     # Analyzing Matrix data...
 
     
