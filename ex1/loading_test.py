@@ -1,6 +1,13 @@
 import importlib
 import importlib.metadata
 
+try:
+    import numpy
+    import pandas
+    import matplotlib
+except ImportError:
+    pass
+
 
 class DependencyInfo:
     def __init__(
@@ -68,6 +75,10 @@ def main() -> None:
         ("matplotlib", "Visualization")
     ]
     all_deps = check_dependencies(dependencies)
+
+    if not all(dep.available for dep in all_deps.values()):
+        print("\nPlease install the missing dependencies and try again.")
+        return
     # Analyzing Matrix data...
     generate_matrix_data(1000)
 
