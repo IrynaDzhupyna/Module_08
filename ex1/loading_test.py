@@ -14,7 +14,7 @@ class DependencyInfo:
         self.version = version
         self.description = description
 
-    def show_info(self):
+    def show_info(self) -> None:
         if self.available:
             print(f"[OK] {self.name} ({self.version}) - {self.description} ready")
         else:
@@ -52,11 +52,16 @@ def check_dependencies(
             print("Or with Poetry: poetry install")
             break
 
-    return all_deps 
+    return all_deps
+
+
+def generate_matrix_data(n: int) -> "numpy.ndarray":
+    generator = numpy.random.default_rng()
+    print(generator)
 
 
 def main() -> None:
-    print(f"\nLOADING STATUS: Loading programs...\n")
+    print("\nLOADING STATUS: Loading programs...\n")
     dependencies: list[tuple[str, str]] = [
         ("pandas", "Data manipulation"),
         ("numpy", "Numerical computation"),
@@ -64,9 +69,8 @@ def main() -> None:
     ]
     all_deps = check_dependencies(dependencies)
     # Analyzing Matrix data...
+    generate_matrix_data(1000)
 
-    
-    
 
 if __name__ == "__main__":
     main()
