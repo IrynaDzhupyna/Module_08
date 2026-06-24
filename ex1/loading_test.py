@@ -29,7 +29,7 @@ class DependencyInfo:
 
 
 def check_dependencies(
-        dependencies: list[tuple[str, str]]) -> dict[str, DependencyInfo]:
+        dependencies: list[tuple[str, str]]) -> dict[str, DependencyInfo] | None:
     print("Checking dependencies:")
     all_deps: dict[str, DependencyInfo] = {}
 
@@ -54,10 +54,10 @@ def check_dependencies(
 
     for dep in all_deps.values():
         if not dep.available:
-            print("\nSome dependencies are missing.")
-            print("Install with: pip install -r requirements.txt")
-            print("Or with Poetry: poetry install")
-            break
+            print("\nSome dependencies are missing. Install them with:")
+            print("pip: pip install -r requirements.txt\n"
+                  "Or\nPoetry: poetry install")
+            return 
 
     return all_deps
 
@@ -74,11 +74,11 @@ def main() -> None:
         ("numpy", "Numerical computation"),
         ("matplotlib", "Visualization")
     ]
+    
     all_deps = check_dependencies(dependencies)
-
-    if not all(dep.available for dep in all_deps.values()):
-        print("\nPlease install the missing dependencies and try again.")
-        return
+    if not all_deps:
+        return 
+    
     # Analyzing Matrix data...
     generate_matrix_data(1000)
 
