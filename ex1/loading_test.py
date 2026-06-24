@@ -1,12 +1,12 @@
 import importlib
 import importlib.metadata
-
+'''
 try:
     import numpy
     import pandas
     import matplotlib
 except ImportError:
-    pass
+    pass'''
 
 
 class DependencyInfo:
