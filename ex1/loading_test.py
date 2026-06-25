@@ -1,12 +1,5 @@
 import importlib
 import importlib.metadata
-'''
-try:
-    import numpy
-    import pandas
-    import matplotlib
-except ImportError:
-    pass'''
 
 
 class DependencyInfo:
@@ -14,12 +7,14 @@ class DependencyInfo:
             self, name: str,
             available: bool,
             description: str,
-            version: str | None = None):
+            version: str | None = None,
+            module: object | None = None) -> None:
 
         self.name = name
         self.available = available
         self.version = version
         self.description = description
+        self.module = module
 
     def show_info(self) -> None:
         if self.available:
@@ -35,10 +30,10 @@ def check_dependencies(
 
     for key, value in dependencies:
         try:
-            importlib.import_module(key)
+            module = importlib.import_module(key)
         except ImportError:
             all_deps[key] = DependencyInfo(
-                key, available=False, description=value, version=None)
+                key, available=False, description=value, version=None, module=None)
             continue
         
         try:
@@ -47,7 +42,7 @@ def check_dependencies(
             version = None
 
         all_deps[key] = DependencyInfo(
-            key, available=True, description=value, version=version)
+            key, available=True, description=value, version=version, module = module)
 
     for dep in all_deps.values():
         dep.show_info()
@@ -57,13 +52,12 @@ def check_dependencies(
             print("\nSome dependencies are missing. Install them with:")
             print("pip: pip install -r requirements.txt\n"
                   "Or\nPoetry: poetry install")
-            return 
-
+            return None
     return all_deps
 
 
-def generate_matrix_data(n: int) -> "numpy.ndarray":
-    generator = numpy.random.default_rng()
+def generate_matrix_data(n: int, module) -> "numpy.ndarray":
+    generator = module.random.default_rng()
     print(generator)
 
 
@@ -80,7 +74,8 @@ def main() -> None:
         return 
     
     # Analyzing Matrix data...
-    generate_matrix_data(1000)
+
+    generate_matrix_data(1000, all_deps["numpy"].module)
 
 
 if __name__ == "__main__":
