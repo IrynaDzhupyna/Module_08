@@ -51,9 +51,9 @@ def check_dependencies(
         if not dep.available:
             if dep.name == "requests":
                 continue
-            print("\nSome dependencies are missing. Install them with:")
-            print("pip: pip install -r requirements.txt\n"
-                  "Or\nPoetry: poetry install")
+            print("\nSome dependencies are missing.\nInstall them with:")
+            print("- Pip: activate venv then pip install -r requirements.txt or\n"
+                  "- Poetry: poetry install")
             return None
     return all_deps
 
@@ -66,15 +66,20 @@ def generate_matrix_data(n: int, numpy_module: object) -> object:
 
 
 def build_dataframe(data: object, pandas_module: object) -> object:
-    data_frame = pandas_module.DataFrame({"signal": data})  # type: ignored[attr-defined]
-    # data_frame["rolling_mean"] = data_frame["signal"].rolling(window=10).mean()
+    data_frame = pandas_module.DataFrame({"signal": data})  # type: ignore[attr-defined]
+    data_frame["rolling_mean"] = data_frame["signal"].rolling(window=10).mean()
     return data_frame
 
 
 def generate_visualization(data_frame: object, matplotlib_module: object) -> str:
-    pass
-    
-    
+    plt = importlib.import_module("matplotlib.pyplot")  # type: ignore[attr-defined]
+    fig, ax = plt.subplots()
+    ax.plot(data_frame["signal"])
+    ax.set_title("Matrix Data Analysis")
+    output_path = "matrix_analysis.png"
+    fig.savefig(output_path)
+    plt.close(fig)
+    return output_path
 
 
 def main() -> None:
@@ -83,7 +88,6 @@ def main() -> None:
         ("pandas", "Data manipulation"),
         ("numpy", "Numerical computation"),
         ("matplotlib", "Visualization"),
-        ("requests", "Network access")
     ]
     
     all_deps = check_dependencies(dependencies)
@@ -95,8 +99,8 @@ def main() -> None:
     data = generate_matrix_data(n, all_deps["numpy"].module)
     data_frame = build_dataframe(data, all_deps["pandas"].module)
     print(data_frame)
-    # visualization = generate_visualization(data_frame, all_deps["matplotlib"].module)
-    # print(visualization)
+    visualization = generate_visualization(data_frame, all_deps["matplotlib"].module)
+    print(visualization)
 
 if __name__ == "__main__":
     main()
