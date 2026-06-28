@@ -84,6 +84,21 @@ def generate_visualization(data_frame: object, matplotlib_module: object) -> str
     plt.close(fig)
     return output_path
 
+import sys
+
+
+def compare_pip_poetry() -> None:
+    print("\nDependency management comparison:")
+    print(f"- Current interpreter: {sys.executable}")
+
+    in_venv = sys.base_prefix != sys.prefix
+    print(f"- Running inside a virtual environment: {in_venv}")
+    print(f"- Python executable: {sys.executable}")
+    if "pypoetry" in sys.executable or "virtualenvs" in sys.executable:
+        print("- This environment appears to be Poetry-managed")
+    else:
+        print("- This environment appears to be pip/venv-managed (or system Python)")
+
 
 def main() -> None:
     print("\nLOADING STATUS: Loading programs...\n")
@@ -105,6 +120,7 @@ def main() -> None:
     print("\nAnalysis complete!")
     print(f"Result saved to: {output_file}")
 
+    compare_pip_poetry()
 
 if __name__ == "__main__":
     main()
