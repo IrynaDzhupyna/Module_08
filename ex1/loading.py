@@ -59,20 +59,23 @@ def check_dependencies(
 
 
 def generate_matrix_data(n: int, numpy_module: object) -> object:
-    print(f"\nProcessing {n} data points")
+    print(f"\nAnalyzing Matrix data...")
     generator = numpy_module.random.default_rng()  # type: ignore[attr-defined]
     data = generator.normal(size=n)
     return data
 
 
 def build_dataframe(data: object, pandas_module: object) -> object:
+    print(f"Processing {len(data)} data points...")
     data_frame = pandas_module.DataFrame({"signal": data})  # type: ignore[attr-defined]
     data_frame["rolling_mean"] = data_frame["signal"].rolling(window=10).mean()
     return data_frame
 
 
 def generate_visualization(data_frame: object, matplotlib_module: object) -> str:
-    plt = importlib.import_module("matplotlib.pyplot")  # type: ignore[attr-defined]
+    print("Generating visualization...")
+    importlib.import_module("matplotlib.pyplot")
+    plt = matplotlib_module.pyplot  # type: ignore[attr-defined]
     fig, ax = plt.subplots()
     ax.plot(data_frame["signal"])
     ax.set_title("Matrix Data Analysis")
@@ -98,9 +101,10 @@ def main() -> None:
     n = 1000
     data = generate_matrix_data(n, all_deps["numpy"].module)
     data_frame = build_dataframe(data, all_deps["pandas"].module)
-    print(data_frame)
-    visualization = generate_visualization(data_frame, all_deps["matplotlib"].module)
-    print(visualization)
+    output_file = generate_visualization(data_frame, all_deps["matplotlib"].module)
+    print("\nAnalysis complete!")
+    print(f"Result saved to: {output_file}")
+
 
 if __name__ == "__main__":
     main()
