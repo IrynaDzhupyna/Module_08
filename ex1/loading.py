@@ -6,14 +6,15 @@ class DependencyInfo:
     def __init__(
             self, name: str,
             available: bool,
+            description: str,
             version: str | None = None,
-            description: str | None = None
-    ) -> None:
+            module: object | None = None) -> None:
 
         self.name = name
         self.available = available
         self.version = version
         self.description = description
+        self.module = module
 
     def show_info(self) -> None:
         if self.available:
@@ -22,42 +23,75 @@ class DependencyInfo:
             print(f"[MISSING] {self.name} - package not installed")
 
 
-def check_dependency(dependency: str, description: str | None = None) -> DependencyInfo:
-    try:
-        importlib.import_module(dependency)
-    except ImportError:
-        return DependencyInfo(dependency, available=False, description=description)
+def check_dependencies(
+        dependencies: list[tuple[str, str]]) -> dict[str, DependencyInfo] | None:
+    print("Checking dependencies:")
+    all_deps: dict[str, DependencyInfo] = {}
 
-    try:
-        version = importlib.metadata.version(dependency)
-    except importlib.metadata.PackageNotFoundError:
-        version = None
-    return DependencyInfo(dependency, available=True, version=version, description=description)
+    for key, value in dependencies:
+        try:
+            module = importlib.import_module(key)
+        except ImportError:
+            all_deps[key] = DependencyInfo(
+                key, available=False, description=value, version=None, module=None)
+            continue
+        
+        try:
+            version = importlib.metadata.version(key)
+        except importlib.metadata.PackageNotFoundError:
+            version = None
+
+        all_deps[key] = DependencyInfo(
+            key, available=True, description=value, version=version, module = module)
+
+    for dep in all_deps.values():
+        dep.show_info()
+
+    for dep in all_deps.values():
+        if not dep.available:
+            print("\nSome dependencies are missing. Install them with:")
+            print("pip: pip install -r requirements.txt\n"
+                  "Or\nPoetry: poetry install")
+            return None
+    return all_deps
+
+
+def generate_matrix_data(n: int, numpy_module: object) -> object:
+    print(f"\nProcessing {n} data points")
+    generator = numpy_module.random.default_rng()
+    data = generator.normal(size=n)
+    return data
+
+
+def build_dataframe(data: object, pandas_module: object) -> object:
+    data_frame = pandas_module.DataFrame({"signal": data})
+    data_frame["rolling_mean"] = data_frame["signal"].rolling(window=10).mean()
+    return data_frame
+
+
+def generate_visualization(data_frame: object, module: object) -> str:
+    pass
+    
 
 
 def main() -> None:
     print("\nLOADING STATUS: Loading programs...\n")
-    print("Checking dependencies")
-    dependencies = {
-        "pandas": "Data manipulation",
-        "numpy": "Numerical computation",
-        "matplotlib": "Visualization"
-        }
-    dep_obj: list[DependencyInfo] = []
-
-    for dep, description in dependencies.items():
-        dep_obj.append(check_dependency(dep, description=description))
-
-    for element in dep_obj:
-        element.show_info()
-
-    for element in dep_obj:
-        if not element.available:
-            print("\nSome dependencies are missing.")
-            print("Install with: pip install -r requirements.txt")
-            print("Or with Poetry: poetry install")
-            break
+    dependencies: list[tuple[str, str]] = [
+        ("pandas", "Data manipulation"),
+        ("numpy", "Numerical computation"),
+        ("matplotlib", "Visualization")
+    ]
     
+    all_deps = check_dependencies(dependencies)
+    if not all_deps:
+        return 
+    
+    # Analyzing Matrix data...
+    n = 1000
+    data = generate_matrix_data(n, all_deps["numpy"].module)
+    data_frame = build_dataframe(data, all_deps["pandas"].module)
+    print(data_frame)
+
 
 if __name__ == "__main__":
     main()
