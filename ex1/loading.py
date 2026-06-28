@@ -1,5 +1,6 @@
 import importlib
 import importlib.metadata
+import sys
 
 
 class DependencyInfo:
@@ -51,15 +52,36 @@ def check_dependencies(
         if not dep.available:
             if dep.name == "requests":
                 continue
-            print("\nSome dependencies are missing.\nInstall them with:")
-            print("- Pip: activate venv then pip install -r requirements.txt or\n"
-                  "- Poetry: poetry install")
+            print("\nSome dependencies are missing.\nInstall them first using pip or poetry!")
+            print("- Pip:\n"
+                  "python3 -m venv matrix_venv\n"
+                  "source matrix_venv/bin/activate\n"
+                  "pip install -r requirements.txt\n"
+                  "- Poetry:\npoetry install\n"
+                  "poetry run python3 loading.py")
             return None
     return all_deps
 
 
+
+def compare_pip_poetry() -> None:
+    print("\nDependency managment comparison:")
+    print(f"- Python executable: {sys.executable}")
+
+    if sys.prefix != sys.base_prefix:
+        print(" - Running inside virtual enviroment")
+        print(f" - Python executable: {sys.executable}")
+        if "pypoetry" in sys.executable or "virtualenvs" in sys.executable:
+            print(" - This is Poetry-managed enviroment")
+        else:
+            print(" - This is pip/venv-managed enviroment")
+    else:
+        print("No virtual enviroment detected. You are in global scope.")
+
+
+
 def generate_matrix_data(n: int, numpy_module: object) -> object:
-    print(f"\nAnalyzing Matrix data...")
+    print("\nAnalyzing Matrix data...")
     generator = numpy_module.random.default_rng()  # type: ignore[attr-defined]
     data = generator.normal(size=n)
     return data
@@ -84,21 +106,6 @@ def generate_visualization(data_frame: object, matplotlib_module: object) -> str
     plt.close(fig)
     return output_path
 
-import sys
-
-
-def compare_pip_poetry() -> None:
-    print("\nDependency management comparison:")
-    print(f"- Current interpreter: {sys.executable}")
-
-    in_venv = sys.base_prefix != sys.prefix
-    print(f"- Running inside a virtual environment: {in_venv}")
-    print(f"- Python executable: {sys.executable}")
-    if "pypoetry" in sys.executable or "virtualenvs" in sys.executable:
-        print("- This environment appears to be Poetry-managed")
-    else:
-        print("- This environment appears to be pip/venv-managed (or system Python)")
-
 
 def main() -> None:
     print("\nLOADING STATUS: Loading programs...\n")
@@ -119,8 +126,8 @@ def main() -> None:
     output_file = generate_visualization(data_frame, all_deps["matplotlib"].module)
     print("\nAnalysis complete!")
     print(f"Result saved to: {output_file}")
-
     compare_pip_poetry()
+
 
 if __name__ == "__main__":
     main()
